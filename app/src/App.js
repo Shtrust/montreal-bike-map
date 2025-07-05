@@ -1,43 +1,58 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix default icon issues in Leaflet + Webpack
+import iconUrl from 'leaflet/dist/images/marker-icon.png';
+import iconShadowUrl from 'leaflet/dist/images/marker-shadow.png';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl,
+  shadowUrl: iconShadowUrl,
+});
 
 function App() {
   const [racks, setRacks] = useState([]);
 
   useEffect(() => {
     fetch('http://localhost:5000/api/bikeracks')
-      .then(response => response.json())
-      .then(data => setRacks(data.slice(0, 20))) // Limit to first 20 for now
+      .then(res => res.json())
+      .then(data => 
+        {console.log('Fetched racks:', data)
+        setRacks(data)})
+      
       .catch(err => console.error(err));
   }, []);
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div>
       <h1>Montreal Bike Racks</h1>
-      <table border="1" cellPadding="5">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Longitude</th>
-            <th>Latitude</th>
-            <th>Park</th>
-            <th>Territory</th>
-          </tr>
-        </thead>
-        <tbody>
-          {racks.map(rack => (
-            <tr key={rack.id}>
-              <td>{rack.id}</td>
-              <td>{rack.longitude}</td>
-              <td>{rack.latitude}</td>
-              <td>{rack.park}</td>
-              <td>{rack.territory}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <MapContainer
+        center={[45.5017, -73.5673]} // Center on Montreal
+        zoom={12}
+        style={{ height: '90vh', width: '100%' }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        {racks.map((rack, idx) => (
+          <Marker
+            key={idx}
+            position={[parseFloat(rack.latitude), parseFloat(rack.longitude)]}
+          >
+            <Popup>
+              <strong>Park:</strong> {rack.park}<br />
+              <strong>Territory:</strong> {rack.territory}
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
     </div>
   );
 }
 
 export default App;
-
