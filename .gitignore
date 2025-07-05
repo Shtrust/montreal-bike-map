@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+# Terraform files
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+
 # Distribution / packaging
 .Python
 build/
