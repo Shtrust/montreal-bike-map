@@ -17,6 +17,11 @@ resource "aws_instance" "bike_map_server" {
     dnf update -y
     dnf install -y docker git
 
+    mkdir -p /usr/local/libexec/docker/cli-plugins
+    curl -SL https://github.com/docker/compose/releases/download/v2.24.6/docker-compose-linux-x86_64 \
+      -o /usr/local/libexec/docker/cli-plugins/docker-compose
+    chmod +x /usr/local/libexec/docker/cli-plugins/docker-compose
+
     
 
     systemctl enable docker
