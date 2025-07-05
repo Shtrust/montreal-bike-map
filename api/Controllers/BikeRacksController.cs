@@ -15,7 +15,7 @@ namespace api.Controllers
         {
             var racks = new List<dynamic>();
 
-            using (var reader = new StreamReader("Data/bike_racks.csv"))
+            using (var reader = new StreamReader("data/bike_racks.csv"))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 foreach (var record in csv.GetRecords<dynamic>())
