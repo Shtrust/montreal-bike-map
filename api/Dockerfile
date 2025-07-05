@@ -1,10 +1,17 @@
-FROM python:3.11
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY *.csproj ./
+RUN dotnet restore
 
-COPY . .
+COPY . ./
+RUN dotnet publish -c Release -o out
 
-CMD ["python", "app.py"]
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/out ./
+
+ENTRYPOINT ["dotnet", "api.dll"]
