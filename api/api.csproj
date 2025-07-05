@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-  <Content Include="Data/bike_racks.csv">
+  <Content Include="data/bike_racks.csv">
     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
 </ItemGroup>
