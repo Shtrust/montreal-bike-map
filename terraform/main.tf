@@ -44,7 +44,7 @@ resource "aws_instance" "bike_map_server" {
 }
 
 resource "aws_security_group" "allow_http" {
-  name        = "allow_http"
+  name        = "allow_http-"
   description = "Allow HTTP and custom ports"
 
   ingress {
