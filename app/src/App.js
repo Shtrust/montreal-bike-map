@@ -4,7 +4,7 @@ function App() {
   const [racks, setRacks] = useState([]);
 
   useEffect(() => {
-    fetch('/api/bikeracks')
+    fetch('http://localhost:5000/api/bikeracks')
       .then(response => response.json())
       .then(data => setRacks(data.slice(0, 20))) // Limit to first 20 for now
       .catch(err => console.error(err));
