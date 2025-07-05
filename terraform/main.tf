@@ -9,32 +9,34 @@ resource "aws_instance" "bike_map_server" {
   key_name      = "my-bikemap-ke" # ✅ Make sure your key pair exists in this region
 
   user_data = <<-EOF
-              #!/bin/bash
-              exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+    #!/bin/bash
+    set -xe
 
-              # Update OS
-              dnf update -y
+    exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
-              # Install Docker
-              dnf install docker -y
-              systemctl enable docker
-              systemctl start docker
-              usermod -a -G docker ec2-user
+    dnf update -y
+    dnf install -y docker git
 
-              # Install Docker Compose
-              curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-\\$(uname -s)-\\$(uname -m)" -o /usr/local/bin/docker-compose
-              chmod +x /usr/local/bin/docker-compose
+    
 
-              # Install Git
-              dnf install git -y
+    systemctl enable docker
+    systemctl start docker
+    usermod -aG docker ec2-user
 
-              # Clone your project
-              cd /home/ec2-user
-              git clone https://github.com/Shtrust/montreal-bike-map.git
+    cd /home/ec2-user
+    rm -rf montreal-bike-map
+    git clone https://github.com/Shtrust/montreal-bike-map.git
+    chown -R ec2-user:ec2-user /home/ec2-user/montreal-bike-map
 
-              cd montreal-bike-map
-              docker-compose up -d
-            EOF
+    cd montreal-bike-map
+    docker --version
+    docker compose version
+
+    docker compose build --no-cache
+    docker compose up -d
+  EOF
+
+   user_data_replace_on_change = true
 
   vpc_security_group_ids = [aws_security_group.allow_http.id]
 
